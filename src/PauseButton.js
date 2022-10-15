@@ -5,7 +5,8 @@ import { useGlobalState } from './Contexts';
 const paused_reference = {
   0: "Pause",
   1: "Resume",
-  2: "Start"
+  2: "Start",
+  3: "Restart",
 }
 
 function PauseButton() {
@@ -13,10 +14,10 @@ function PauseButton() {
 
     function handlePause(e) {
       e.preventDefault();
-      if (state.paused == 2){
+      dispatch({previousPausedState:state.paused})
+      if (state.paused == 2 | state.paused == 3){
         state.paused = 1;
       }
-      console.log('You clicked submit.',Math.abs(state.paused - 1));
       dispatch({paused:Math.abs(state.paused - 1)})
       console.log(state.paused)
     }

@@ -32,7 +32,7 @@ class Node{
 
     showMaze(col){
         if (this.isPassage){
-            this.p.fill(255)
+            this.p.fill(255,255,255)
         }
         else {
             this.p.fill(0,0,0,50);
@@ -47,13 +47,13 @@ class Node{
             this.p.fill(0,255,0,50)
         }
         this.p.noStroke();
-        this.p.rect(this.posx * this.w , this.posy * this.b, this.w - 1, this.b - 1);
+        this.p.rect(this.posx * this.w , this.posy * this.b, this.w , this.b, 55 );
     }
 
     showPath(col){
         this.p.noStroke();
         this.p.fill(col)
-        this.p.rect(this.posx * this.w , this.posy * this.b, this.w - 1, this.b - 1);
+        this.p.rect(this.posx * this.w , this.posy * this.b, this.w , this.b, 55);
     }
 }
 

@@ -39,6 +39,35 @@ class Grid {
 
         this.frontier_length = 1;
 
+        this.previous_path = [];
+        this.init();
+    }
+
+    reset(){
+        this.width = WIDTH;
+        this.height = HEIGHT;
+
+        this.rows = ROWS;
+        this.cols = COLUMNS;
+
+        this.w = SQUARE_SIZE;
+        this.h = SQUARE_SIZE;
+
+        this.frontier = [];
+
+        this.openSet = [];
+        this.closedSet = [];
+
+        this.path = [];
+
+        this.current = undefined;
+
+        this.p = this.p;
+
+        this.frontier_length = 1;
+
+        this.previous_path = [];
+
         this.init();
     }
 
@@ -70,8 +99,6 @@ class Grid {
             this.end = this.grid[endCoords[0]][endCoords[1]]
         }
 
-        startCoords = [2,4];
-        endCoords = [124,54];
         this.start = this.grid[startCoords[0]][startCoords[1]]
         this.end = this.grid[endCoords[0]][endCoords[1]]
 
@@ -88,6 +115,8 @@ class Grid {
         this.addNeighbors();
 
         this.openSet.push(this.start);
+
+        this.finished = false;
     }
 
     getFrontier(){
@@ -200,7 +229,6 @@ class Grid {
                 removeFromArray(this.grid[i][j].sons, temp);
             }
         }
-        console.log(this.passage.length, this.frontier_length, this.frontier.length)
         if (this.passage.length % this.frontier_length < 2){
             this.frontier_length = this.frontier.length + 1;
             this.drawDrawing()
@@ -222,7 +250,6 @@ class Grid {
     addNeighbors(){
         for (var i = 0; i < this.cols; i++){
             for (var j = 0; j < this.rows; j++){
-                console.log(i,j)
                 if (i < this.cols - 1){
                     this.grid[i][j].neighbours.push(this.grid[i + 1][j]);
                 }
@@ -268,10 +295,8 @@ class Grid {
             }
 
             this.current = this.openSet[winner];
-            if (this.current === this.end){
-                console.log("found");
-                this.p.noLoop();
-            }
+            if (this.current !== this.end){
+                //this.p.noLoop();
             removeFromArray(this.openSet, this.current);
             this.closedSet.push(this.current);
 
@@ -300,7 +325,10 @@ class Grid {
                     }
                 }
             }
-
+            }
+            else{
+                this.finished = true;
+            }
         }
         else {
             // no solution
@@ -309,6 +337,7 @@ class Grid {
     }
 
     drawPath(){
+        this.p.background(0);
         for (var i = 0; i < this.cols; i++) {
             for (var j = 0; j < this.rows; j++) {
                 if (this.grid[i][j].isPassage){
