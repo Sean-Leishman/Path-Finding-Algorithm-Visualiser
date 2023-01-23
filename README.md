@@ -10,5 +10,5 @@ Build using `npm run build`
 ## Built with:
 - React
 - JavaScript
-- HTML/CSS
+- HTML & CSS
 - Processing.js
