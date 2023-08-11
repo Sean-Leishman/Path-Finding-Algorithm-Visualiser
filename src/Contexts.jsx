@@ -1,17 +1,19 @@
-import React from 'react';
+import React from "react";
 
 const defaultDrawingState = {
-  previousPausedState:2,
+  previousPausedState: 2,
   paused: 2,
-  wallGenerationType: 0
-}
+  wallGenerationType: 0,
+  pathAlgorithmType: 0,
+  mazeGenerationType: 0,
+};
 const DrawingStateContext = React.createContext(defaultDrawingState);
 const DispatchStateContext = React.createContext(undefined);
 
 export const useGlobalState = () => [
-    React.useContext(DrawingStateContext),
-    React.useContext(DispatchStateContext)
-]
+  React.useContext(DrawingStateContext),
+  React.useContext(DispatchStateContext),
+];
 
 const DrawingStateProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(
@@ -25,6 +27,6 @@ const DrawingStateProvider = ({ children }) => {
       </DispatchStateContext.Provider>
     </DrawingStateContext.Provider>
   );
-  }
+};
 
 export default DrawingStateProvider;

@@ -187,9 +187,9 @@ class Grid {
     }
   }
 
-  generate_walls() {
+  generate_all_walls() {
     while (this.frontier.length > 0) {
-      this.createMaze();
+      this.stepPrimsMaze();
     }
   }
 
@@ -225,7 +225,8 @@ class Grid {
     }
   }
 
-  createMaze() {
+  // Generated using Prim's Algorithm with Flooding
+  stepPrimsMaze() {
     let rand = Math.floor(this.passage_with_sons.length * Math.random());
     this.current = this.passage_with_sons[rand];
     while (this.current.sons.length === 0) {
@@ -261,8 +262,8 @@ class Grid {
     }
   }
 
-  showDrawing() {
-    this.createMaze();
+  updateMazeStep() {
+    this.stepPrimsMaze();
 
     if (
       this.passage.length % this.frontier_length < 2 &&
@@ -316,7 +317,7 @@ class Grid {
     }
   }
 
-  showPath() {
+  showAStarPath() {
     if (this.openSet.length > 0) {
       var winner = 0;
       for (var i = 0; i < this.openSet.length; i++) {
@@ -363,10 +364,10 @@ class Grid {
     } else {
       // no solution
     }
-    this.drawPath();
+    this.drawAStarPath();
   }
 
-  drawPath() {
+  drawAStarPath() {
     // for (var i = 0; i < this.cols; i++) {
     //   for (var j = 0; j < this.rows; j++) {
     //     this.grid[i][j].showMaze();

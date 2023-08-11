@@ -35,17 +35,17 @@ export default function Drawing() {
     if (state.paused == 0) {
       if (!walls_generated && state.wallGenerationType == 0) {
         console.log("Generate walls");
-        p5.myGrid.generate_walls();
+        p5.myGrid.generate_all_walls();
         walls_generated = true;
       }
       if (generation) {
         if (p5.myGrid.frontier.length === 0) {
-          p5.myGrid.showPath();
+          p5.myGrid.showAStarPath();
           if (p5.myGrid.finished) {
             dispatch({ paused: 3 });
           }
         } else {
-          p5.myGrid.showDrawing();
+          p5.myGrid.updateMazeStep();
         }
       } else {
         p5.myGrid.drawDrawing();

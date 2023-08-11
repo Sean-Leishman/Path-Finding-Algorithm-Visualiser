@@ -18,8 +18,13 @@ function WallGenerationButton() {
     2: "wall-dropdown",
   };
 
+  const wall_generation_options = {
+    0: "Instant",
+    1: "Animated",
+  };
+
   let buttonState = {
-    dropDownValue: "Select Wall Generation Type",
+    dropDownValue: "Select Wall Generation Type: ",
   };
 
   function handleSelect(e) {
@@ -31,14 +36,21 @@ function WallGenerationButton() {
     <DropdownButton
       data-bs-toggle="dropdown"
       variant="success"
-      title={buttonState["dropDownValue"]}
-      id="dropdown-basic"
+      title={
+        buttonState["dropDownValue"] +
+        wall_generation_options[state.wallGenerationType]
+      }
+      id="wall-generation-select"
       onSelect={handleSelect}
-      className={dropdownState[state.paused]}
+      className="wall-generation-select"
     >
       <Dropdown.Header>Dropdown header</Dropdown.Header>
-      <Dropdown.Item eventKey="instant">Instant</Dropdown.Item>
-      <Dropdown.Item eventKey="not-instant">Animated</Dropdown.Item>
+      <Dropdown.Item eventKey="instant">
+        {wall_generation_options[0]}
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="not-instant">
+        {wall_generation_options[1]}
+      </Dropdown.Item>
     </DropdownButton>
   );
 }
