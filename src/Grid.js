@@ -57,6 +57,7 @@ class Grid {
 
     this.openSet = [];
     this.closedSet = [];
+    this.visitedSet = [];
 
     this.path = [];
 
@@ -366,23 +367,24 @@ class Grid {
   }
 
   drawPath() {
-    for (var i = 0; i < this.cols; i++) {
-      for (var j = 0; j < this.rows; j++) {
-        this.grid[i][j].showMaze();
-        if (this.grid[i][j].isPassage) {
-          this.grid[i][j].showPath(this.p.color(255));
-        } else {
-          this.grid[i][j].showPath(this.p.color(0));
-        }
-      }
-    }
+    // for (var i = 0; i < this.cols; i++) {
+    //   for (var j = 0; j < this.rows; j++) {
+    //     this.grid[i][j].showMaze();
+    //     if (this.grid[i][j].isPassage) {
+    //       this.grid[i][j].showPath(this.p.color(255));
+    //     } else {
+    //       this.grid[i][j].showPath(this.p.color(0));
+    //     }
+    //   }
+    // }
 
     for (var x = 0; x < this.openSet.length; x++) {
       this.openSet[x].showPath(this.p.color(0, 0, 255, 50));
     }
 
     for (var y = 0; y < this.closedSet.length; y++) {
-      this.closedSet[y].showPath(this.p.color(255, 0, 0, 50));
+      // this.p.color(255, 255, 255, 50)
+      this.closedSet[y].showPath();
     }
 
     this.start.showPath(this.p.color(255, 0, 0));

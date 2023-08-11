@@ -57,7 +57,15 @@ class Node {
     }
   }
 
-  showMaze(col) {
+  showMaze() {
+    if (!this.updateWall) {
+      // Remove when fixing issue
+      // this.updateWall = true;
+      // this.p.erase();
+      // this.p.rect(this.posx * this.w, this.posy * this.b, this.w, this.b);
+      // this.p.noErase();
+      return;
+    }
     if (this.isFrontier) {
       this.p.fill(0, 0, 255, 50);
     } else if (this.start) {
@@ -67,17 +75,12 @@ class Node {
     } else {
       this.p.fill(255, 255, 255);
     }
+
     this.p.noStroke();
     this.p.rect(this.posx * this.w, this.posy * this.b, this.w, this.b);
 
     this.p.strokeWeight(1);
     this.p.stroke(51);
-
-    if (!this.updateWall) {
-      // Remove when fixing issue
-      this.updateWall = true;
-      return;
-    }
     for (let wall of this.walls) {
       if (this.posx > wall.posx) {
         this.p.line(
@@ -101,8 +104,36 @@ class Node {
 
   showPath(col) {
     this.p.noStroke();
-    this.p.fill(col);
-    this.p.rect(this.posx * this.w, this.posy * this.b, this.w, this.b);
+    if (col) {
+      this.p.fill(col);
+      this.p.rect(this.posx * this.w, this.posy * this.b, this.w, this.b);
+    } else {
+      this.p.erase();
+      this.p.rect(this.posx * this.w, this.posy * this.b, this.w, this.b);
+      this.p.noErase();
+    }
+
+    this.p.strokeWeight(1);
+    this.p.stroke(51);
+
+    for (let wall of this.walls) {
+      if (this.posx > wall.posx) {
+        this.p.line(
+          this.posx * this.w,
+          this.posy * this.b,
+          this.posx * this.w,
+          this.posy * this.b + this.b
+        );
+      }
+      if (this.posy > wall.posy) {
+        this.p.line(
+          this.posx * this.w,
+          this.posy * this.b,
+          this.posx * this.w + this.w,
+          this.posy * this.b
+        );
+      }
+    }
   }
 }
 

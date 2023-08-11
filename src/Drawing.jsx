@@ -15,7 +15,7 @@ export default function Drawing() {
 
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(WIDTH, HEIGHT).parent(canvasParentRef);
-    p5.background(0);
+    p5.background(255);
     p5.myGrid = new Grid(p5);
     p5.myGrid.drawDrawing();
     p5.frameRate(120);

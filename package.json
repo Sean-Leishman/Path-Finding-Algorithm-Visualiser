@@ -1,8 +1,7 @@
 {
   "name": "path-finding-algorithm-visualiser",
   "version": "0.1.0",
-  "private": true,
-  "homepage": "https://Sean-Leishman.github.io/Path-Finding-Algorithm-Visualiser",
+  "homepage": "https://sean-leishman.github.io/path-finding-algorithm-visualiser/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
