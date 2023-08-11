@@ -4,31 +4,29 @@ import React from "react";
 import { useGlobalState } from "./Contexts";
 import "./menu.css";
 
-const wall_generation_ref = {
-  instant: 0,
-  "not-instant": 1,
+const maze_algorithm_ref = {
+  Prim: 0,
 };
 
-function WallGenerationButton() {
+function MazeAlgorithmButton() {
   const [state, dispatch] = useGlobalState();
 
   const dropdownState = {
-    0: "wall-dropdown-invalid",
-    1: "wall-dropdown-invalid",
-    2: "wall-dropdown",
+    0: "maze-dropdown-invalid",
+    1: "maze-dropdown-invalid",
+    2: "maze-dropdown",
   };
 
-  const wall_generation_options = {
-    0: "Instant",
-    1: "Animated",
+  const maze_algorithm_options = {
+    0: "Prim",
   };
 
   let buttonState = {
-    dropDownValue: "Select Wall Generation Type: ",
+    dropDownValue: "Select Maze Algorithm Type: ",
   };
 
   function handleSelect(e) {
-    dispatch({ wallGenerationType: wall_generation_ref[e] });
+    dispatch({ mazeAlgorithmType: maze_algorithm_ref[e] });
     buttonState["dropDownValue"] = e;
   }
 
@@ -38,21 +36,18 @@ function WallGenerationButton() {
       variant="success"
       title={
         buttonState["dropDownValue"] +
-        wall_generation_options[state.wallGenerationType]
+        maze_algorithm_options[state.mazeAlgorithmType]
       }
-      id="wall-generation-select"
+      id="maze-algorithm-select"
       onSelect={handleSelect}
       className="dropdown"
     >
       <Dropdown.Header>Dropdown header</Dropdown.Header>
-      <Dropdown.Item eventKey="instant">
-        {wall_generation_options[0]}
-      </Dropdown.Item>
-      <Dropdown.Item eventKey="not-instant">
-        {wall_generation_options[1]}
+      <Dropdown.Item eventKey="Prim's">
+        {maze_algorithm_options[0]}
       </Dropdown.Item>
     </DropdownButton>
   );
 }
 
-export default WallGenerationButton;
+export default MazeAlgorithmButton;

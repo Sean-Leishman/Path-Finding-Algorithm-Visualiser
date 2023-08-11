@@ -5,7 +5,7 @@ const defaultDrawingState = {
   paused: 2,
   wallGenerationType: 0,
   pathAlgorithmType: 0,
-  mazeGenerationType: 0,
+  mazeAlgorithmType: 0,
 };
 const DrawingStateContext = React.createContext(defaultDrawingState);
 const DispatchStateContext = React.createContext(undefined);

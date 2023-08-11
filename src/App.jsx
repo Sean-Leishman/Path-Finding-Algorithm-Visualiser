@@ -4,6 +4,7 @@ import PauseButton from "./PauseButton";
 import WallGenerationButton from "./WallGenerationButton";
 import DrawingStateProvider from "./Contexts";
 import PathAlgorithmButton from "./PathAlgorithmButton";
+import MazeAlgorithmButton from "./MazeTypeButton";
 
 function App() {
   const canvasStyle = {
@@ -15,8 +16,11 @@ function App() {
       <DrawingStateProvider>
         <Drawing />
         <PauseButton />
-        <WallGenerationButton />
-        <PathAlgorithmButton />
+        <div className="buttons">
+          <WallGenerationButton />
+          <PathAlgorithmButton />
+          <MazeAlgorithmButton />
+        </div>
       </DrawingStateProvider>
     </div>
   );

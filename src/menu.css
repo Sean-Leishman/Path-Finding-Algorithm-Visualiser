@@ -1,7 +1,11 @@
-.wall-dropdown-invalid{
-    opacity:.5;
+.wall-dropdown-invalid {
+  opacity: 0.5;
 }
 
-.wall-dropdown{
-    opacity:1;
+.wall-dropdown {
+  opacity: 1;
+}
+
+.dropdown {
+  margin-top: 10px;
 }
