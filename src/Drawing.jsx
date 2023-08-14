@@ -8,6 +8,7 @@ export default function Drawing() {
   let [state, dispatch] = useGlobalState();
   let generation = false;
   let walls_generated = false;
+  let generated_walls = false;
 
   const canvasStyle = {
     marginTop: "1rem",
@@ -37,18 +38,27 @@ export default function Drawing() {
         console.log("Generate walls");
         p5.myGrid.generate_all_walls();
         walls_generated = true;
+      } else if (!walls_generated && state.wallGenerationType == 1) {
+        console.log("Walls Generated");
+        p5.myGrid.generate_all_walls_with_steps(2);
+        walls_generated = true;
       }
       if (generation) {
-        if (p5.myGrid.frontier.length === 0) {
+        if (
+          (p5.myGrid.frontier.length === 0 && state.wallGenerationType != 1) ||
+          generated_walls
+        ) {
           p5.myGrid.showAStarPath();
           if (p5.myGrid.finished) {
             dispatch({ paused: 3 });
           }
         } else {
-          p5.myGrid.updateMazeStep();
+          generated_walls = p5.myGrid.updateMazeStep(2);
         }
-      } else {
+      } else if (state.wallGenerationType == 0) {
         p5.myGrid.drawDrawing();
+        generation = true;
+      } else {
         generation = true;
       }
     }

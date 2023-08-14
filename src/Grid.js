@@ -129,6 +129,10 @@ class Grid {
     this.finished = false;
 
     this.maze_draw_counter = 0;
+
+    this.generation_timestep = 0;
+    this.drawing_timestep = 0;
+    this.drawing_step = 0;
   }
 
   getFrontier() {
@@ -193,34 +197,82 @@ class Grid {
     }
   }
 
+  generate_all_walls_with_steps(step) {
+    this.drawing_step = step;
+    this.set_node_value();
+
+    while (this.frontier.length > 0) {
+      this.stepPrimsMaze();
+      // for (var i = 0; i < this.cols; i++) {
+      //   for (var j = 0; j < this.rows; j++) {
+      //     this.grid[i][j].copy_node();
+      //   }
+      // }
+      this.generation_timestep += 1;
+    }
+  }
+
   convertWallBetweenFrontierAndPassage(a) {
     if (a.posx === this.current.posx) {
       if (a.posy > this.current.posy) {
         this.grid[a.posx][a.posy - 1].isChecked = true;
 
-        this.grid[a.posx][a.posy - 1].removeWall(this.grid[a.posx][a.posy]);
-        this.grid[a.posx][a.posy].removeWall(this.grid[a.posx][a.posy - 1]);
-        this.passage.push(this.grid[a.posx][a.posy - 1]);
+        this.grid[a.posx][a.posy - 1].removeWall(
+          this.grid[a.posx][a.posy],
+          this.generation_timestep
+        );
+        this.grid[a.posx][a.posy].removeWall(
+          this.grid[a.posx][a.posy - 1],
+          this.generation_timestep
+        );
+        this.passage.push(
+          this.grid[a.posx][a.posy - 1],
+          this.generation_timestep
+        );
       } else {
         this.grid[a.posx][a.posy + 1].isChecked = true;
 
-        this.grid[a.posx][a.posy + 1].removeWall(this.grid[a.posx][a.posy]);
-        this.grid[a.posx][a.posy].removeWall(this.grid[a.posx][a.posy + 1]);
-        this.passage.push(this.grid[a.posx][a.posy + 1]);
+        this.grid[a.posx][a.posy + 1].removeWall(
+          this.grid[a.posx][a.posy],
+          this.generation_timestep
+        );
+        this.grid[a.posx][a.posy].removeWall(
+          this.grid[a.posx][a.posy + 1],
+          this.generation_timestep
+        );
+        this.passage.push(
+          this.grid[a.posx][a.posy + 1],
+          this.generation_timestep
+        );
       }
     } else if (a.posy === this.current.posy) {
       if (a.posx > this.current.posx) {
         this.grid[a.posx - 1][a.posy].isChecked = true;
 
-        this.grid[a.posx - 1][a.posy].removeWall(this.grid[a.posx][a.posy]);
-        this.grid[a.posx][a.posy].removeWall(this.grid[a.posx - 1][a.posy]);
+        this.grid[a.posx - 1][a.posy].removeWall(
+          this.grid[a.posx][a.posy],
+          this.generation_timestep
+        );
+        this.grid[a.posx][a.posy].removeWall(
+          this.grid[a.posx - 1][a.posy],
+          this.generation_timestep
+        );
         this.passage.push(this.grid[a.posx - 1][a.posy]);
       } else {
         this.grid[a.posx + 1][a.posy].isChecked = true;
 
-        this.grid[a.posx + 1][a.posy].removeWall(this.grid[a.posx][a.posy]);
-        this.grid[a.posx][a.posy].removeWall(this.grid[a.posx + 1][a.posy]);
-        this.passage.push(this.grid[a.posx + 1][a.posy]);
+        this.grid[a.posx + 1][a.posy].removeWall(
+          this.grid[a.posx][a.posy],
+          this.generation_timestep
+        );
+        this.grid[a.posx][a.posy].removeWall(
+          this.grid[a.posx + 1][a.posy],
+          this.generation_timestep
+        );
+        this.passage.push(
+          this.grid[a.posx + 1][a.posy],
+          this.generation_timestep
+        );
       }
     }
   }
@@ -262,20 +314,33 @@ class Grid {
     }
   }
 
-  updateMazeStep() {
-    this.stepPrimsMaze();
+  updateMazeStep(step) {
+    //this.stepPrimsMaze();
 
-    if (
-      this.passage.length % this.frontier_length < 2 &&
-      this.maze_draw_counter >= 0
-    ) {
-      // this.p.background(255);
-      this.frontier_length = this.frontier.length + 1;
-      this.maze_draw_counter = 0;
-      this.drawDrawing();
+    // if (
+    //   this.passage.length % this.frontier_length < 2 &&
+    //   this.maze_draw_counter >= 0
+    // ) {
+    //   // this.p.background(255);
+    //   this.frontier_length = this.frontier.length + 1;
+    //   this.maze_draw_counter = 0;
+    //   this.drawDrawing();
+    // }
+
+    // this.maze_draw_counter += 1;
+    if (this.drawing_timestep === this.generation_timestep) {
+      return true;
     }
 
-    this.maze_draw_counter += 1;
+    for (var i = 0; i < this.cols; i++) {
+      for (var j = 0; j < this.rows; j++) {
+        this.grid[i][j].showMazeHistory(this.drawing_timestep);
+      }
+    }
+
+    this.drawing_timestep += step;
+
+    return false;
   }
 
   drawDrawing() {
@@ -412,6 +477,14 @@ class Grid {
       );
     }
     this.p.endShape();
+  }
+
+  set_node_value() {
+    for (var i = 0; i < this.cols; i++) {
+      for (var j = 0; j < this.rows; j++) {
+        this.grid[i][j].drawing_step = this.drawing_step;
+      }
+    }
   }
 }
 

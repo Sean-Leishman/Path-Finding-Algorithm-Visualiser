@@ -31,6 +31,21 @@ class Node {
     this.walls = walls;
 
     this.p = p;
+
+    this.history = {};
+    this.drawing_step = 0;
+  }
+
+  copy_node() {
+    let copy_walls = [];
+    for (let wall of this.walls) {
+      copy_walls.push(Object.assign({ ...wall }));
+    }
+    this.history.push(copy_walls);
+  }
+
+  remove_node(i = 1) {
+    this.history = this.history.slice(i);
   }
 
   addToWalls(node) {
@@ -46,18 +61,25 @@ class Node {
     return true;
   }
 
-  removeWall(node) {
+  removeWall(node, time_step, drawing_step) {
     for (let i = 0; i < this.walls.length; i++) {
       if (this.walls[i].posx == node.posx && this.walls[i].posy == node.posy) {
         this.neighbours.push(this.walls[i]);
         this.walls.splice(i, 1);
         this.updateWall = true;
+
+        if (this.drawing_step > 0) {
+          this.history[time_step / this.drawing_step] = this.walls.map((wall) =>
+            Object.assign({ ...wall })
+          );
+        }
+
         return;
       }
     }
   }
 
-  showMaze() {
+  showAllMaze() {
     if (!this.updateWall) {
       // Remove when fixing issue
       // this.updateWall = true;
@@ -66,6 +88,10 @@ class Node {
       // this.p.noErase();
       return;
     }
+    this.showMaze();
+  }
+
+  showMaze() {
     if (this.isFrontier) {
       this.p.fill(0, 0, 255, 50);
     } else if (this.start) {
@@ -133,6 +159,17 @@ class Node {
           this.posy * this.b
         );
       }
+    }
+  }
+
+  showMazeHistory(time_step) {
+    let temp = this.walls;
+
+    if (time_step in this.history) {
+      this.walls = this.history[time_step];
+
+      this.showMaze();
+      this.walls = temp;
     }
   }
 }
