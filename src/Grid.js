@@ -139,7 +139,7 @@ class Grid {
     for (var i = 0; i < this.passage.length; i++) {
       let x = this.passage[i].posx;
       let y = this.passage[i].posy;
-      if (x > 1) {
+      if (x > 0) {
         if (
           !this.grid[x - 1][y].isChecked &&
           !this.passage[i].isValid(this.grid[x - 1][y])
@@ -152,7 +152,7 @@ class Grid {
           }
         }
       }
-      if (y > 1) {
+      if (y > 0) {
         if (
           !this.grid[x][y - 1].isChecked &&
           !this.passage[i].isValid(this.grid[x][y - 1])
@@ -203,6 +203,11 @@ class Grid {
 
     while (this.frontier.length > 0) {
       this.stepPrimsMaze();
+      console.log(
+        this.frontier.length,
+        this.generation_timestep,
+        this.passage.length
+      );
       // for (var i = 0; i < this.cols; i++) {
       //   for (var j = 0; j < this.rows; j++) {
       //     this.grid[i][j].copy_node();
@@ -225,10 +230,7 @@ class Grid {
           this.grid[a.posx][a.posy - 1],
           this.generation_timestep
         );
-        this.passage.push(
-          this.grid[a.posx][a.posy - 1],
-          this.generation_timestep
-        );
+        this.passage.push(this.grid[a.posx][a.posy - 1]);
       } else {
         this.grid[a.posx][a.posy + 1].isChecked = true;
 
@@ -240,10 +242,7 @@ class Grid {
           this.grid[a.posx][a.posy + 1],
           this.generation_timestep
         );
-        this.passage.push(
-          this.grid[a.posx][a.posy + 1],
-          this.generation_timestep
-        );
+        this.passage.push(this.grid[a.posx][a.posy + 1]);
       }
     } else if (a.posy === this.current.posy) {
       if (a.posx > this.current.posx) {
@@ -269,10 +268,7 @@ class Grid {
           this.grid[a.posx + 1][a.posy],
           this.generation_timestep
         );
-        this.passage.push(
-          this.grid[a.posx + 1][a.posy],
-          this.generation_timestep
-        );
+        this.passage.push(this.grid[a.posx + 1][a.posy]);
       }
     }
   }
@@ -328,7 +324,7 @@ class Grid {
     // }
 
     // this.maze_draw_counter += 1;
-    if (this.drawing_timestep === this.generation_timestep) {
+    if (this.drawing_timestep >= this.generation_timestep) {
       return true;
     }
 
@@ -344,9 +340,10 @@ class Grid {
   }
 
   drawDrawing() {
+    this.p.background(255);
     for (var i = 0; i < this.cols; i++) {
       for (var j = 0; j < this.rows; j++) {
-        this.grid[i][j].showMaze(this.p.color(255));
+        this.grid[i][j].showMaze(1);
       }
     }
   }

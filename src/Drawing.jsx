@@ -54,6 +54,10 @@ export default function Drawing() {
           }
         } else {
           generated_walls = p5.myGrid.updateMazeStep(2);
+          if (generated_walls) {
+            console.log("Fully Generated");
+            p5.myGrid.drawDrawing();
+          }
         }
       } else if (state.wallGenerationType == 0) {
         p5.myGrid.drawDrawing();

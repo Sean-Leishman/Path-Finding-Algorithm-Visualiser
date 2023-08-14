@@ -69,9 +69,8 @@ class Node {
         this.updateWall = true;
 
         if (this.drawing_step > 0) {
-          this.history[time_step / this.drawing_step] = this.walls.map((wall) =>
-            Object.assign({ ...wall })
-          );
+          this.history[Math.floor(time_step / this.drawing_step)] =
+            this.walls.map((wall) => Object.assign({ ...wall }));
         }
 
         return;
@@ -91,7 +90,7 @@ class Node {
     this.showMaze();
   }
 
-  showMaze() {
+  showMaze(thickness) {
     if (this.isFrontier) {
       this.p.fill(0, 0, 255, 50);
     } else if (this.start) {
@@ -102,10 +101,14 @@ class Node {
       this.p.fill(255, 255, 255);
     }
 
-    this.p.noStroke();
+    this.p.noStroke(1);
     this.p.rect(this.posx * this.w, this.posy * this.b, this.w, this.b);
 
-    this.p.strokeWeight(1);
+    if (thickness) {
+      this.p.strokeWeight(thickness);
+    } else {
+      this.p.strokeWeight(1);
+    }
     this.p.stroke(51);
     for (let wall of this.walls) {
       if (this.posx > wall.posx) {
@@ -165,8 +168,8 @@ class Node {
   showMazeHistory(time_step) {
     let temp = this.walls;
 
-    if (time_step in this.history) {
-      this.walls = this.history[time_step];
+    if (Math.floor(time_step / this.drawing_step) in this.history) {
+      this.walls = this.history[Math.floor(time_step / this.drawing_step)];
 
       this.showMaze();
       this.walls = temp;
