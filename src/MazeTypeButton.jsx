@@ -3,10 +3,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import React from "react";
 import { useGlobalState } from "./Contexts";
 import "./menu.css";
-
-const maze_algorithm_ref = {
-  Prim: 0,
-};
+import { WALL_GENERATION_ALGO } from "./Constants";
 
 function MazeAlgorithmButton() {
   const [state, dispatch] = useGlobalState();
@@ -19,6 +16,7 @@ function MazeAlgorithmButton() {
 
   const maze_algorithm_options = {
     0: "Prim",
+    1: "Kruskal",
   };
 
   let buttonState = {
@@ -26,7 +24,7 @@ function MazeAlgorithmButton() {
   };
 
   function handleSelect(e) {
-    dispatch({ mazeAlgorithmType: maze_algorithm_ref[e] });
+    dispatch({ mazeAlgorithmType: e });
     buttonState["dropDownValue"] = e;
   }
 
@@ -43,9 +41,8 @@ function MazeAlgorithmButton() {
       className="dropdown"
     >
       <Dropdown.Header>Dropdown header</Dropdown.Header>
-      <Dropdown.Item eventKey="Prim's">
-        {maze_algorithm_options[0]}
-      </Dropdown.Item>
+      <Dropdown.Item eventKey="0">{maze_algorithm_options[0]}</Dropdown.Item>
+      <Dropdown.Item eventKey="1">{maze_algorithm_options[1]}</Dropdown.Item>
     </DropdownButton>
   );
 }

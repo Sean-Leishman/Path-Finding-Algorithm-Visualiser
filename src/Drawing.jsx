@@ -2,7 +2,7 @@ import Grid from "./Grid";
 import Sketch from "react-p5";
 import React, { Component } from "react";
 import { useGlobalState } from "./Contexts";
-import { WIDTH, HEIGHT } from "./Constants";
+import { WIDTH, HEIGHT, WALL_GENERATION_ALGO } from "./Constants";
 
 export default function Drawing() {
   let [state, dispatch] = useGlobalState();
@@ -36,16 +36,17 @@ export default function Drawing() {
     if (state.paused == 0) {
       if (!walls_generated && state.wallGenerationType == 0) {
         console.log("Generate walls");
-        p5.myGrid.generate_all_walls();
+        p5.myGrid.generate_all_walls(state.mazeAlgorithmType);
         walls_generated = true;
       } else if (!walls_generated && state.wallGenerationType == 1) {
+        p5.myGrid.generate_all_walls_with_steps(2, state.mazeAlgorithmType);
         console.log("Walls Generated");
-        p5.myGrid.generate_all_walls_with_steps(2);
         walls_generated = true;
       }
       if (generation) {
         if (
-          (p5.myGrid.frontier.length === 0 && state.wallGenerationType != 1) ||
+          ((p5.myGrid.frontier.length === 0 || p5.myGrid.edges.length === 0) &&
+            state.wallGenerationType != 1) ||
           generated_walls
         ) {
           p5.myGrid.showAStarPath();

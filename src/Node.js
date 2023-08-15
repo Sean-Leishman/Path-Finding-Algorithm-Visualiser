@@ -61,7 +61,7 @@ class Node {
     return true;
   }
 
-  removeWall(node, time_step, drawing_step) {
+  removeWall(node, time_step) {
     for (let i = 0; i < this.walls.length; i++) {
       if (this.walls[i].posx == node.posx && this.walls[i].posy == node.posy) {
         this.neighbours.push(this.walls[i]);

@@ -1,5 +1,14 @@
 import Node from "./Node";
-import { ROWS, COLUMNS, SQUARE_SIZE, WIDTH, HEIGHT } from "./Constants";
+import Edge from "./Edge";
+import KrusSet from "./KrusSet";
+import {
+  ROWS,
+  COLUMNS,
+  SQUARE_SIZE,
+  WIDTH,
+  HEIGHT,
+  WALL_GENERATION_ALGO,
+} from "./Constants";
 
 function heuristic(a, b, p) {
   //var d = abs(a.i - b.i) + abs(a.j - b.j);
@@ -26,8 +35,15 @@ class Grid {
     this.w = SQUARE_SIZE;
     this.h = SQUARE_SIZE;
 
-    this.frontier = [];
+    // Krus
+    this.edges = [];
+    this.sets = [];
 
+    // Prims
+    this.frontier = [];
+    this.frontier_length = 1;
+
+    // A*
     this.openSet = [];
     this.closedSet = [];
 
@@ -36,8 +52,6 @@ class Grid {
     this.current = undefined;
 
     this.p = p;
-
-    this.frontier_length = 1;
 
     this.previous_path = [];
     this.init();
@@ -76,8 +90,12 @@ class Grid {
     console.log(this);
     var isPassage = false;
     this.grid = new Array(this.cols);
+    this.sets = new Array(this.cols);
+
     for (var i = 0; i < this.cols; i++) {
       this.grid[i] = new Array(this.rows);
+      this.sets[i] = new Array(this.rows);
+
       for (var j = 0; j < this.rows; j++) {
         let walls = [];
         if (i > 0) {
@@ -86,11 +104,16 @@ class Grid {
         if (j > 0) {
           walls.push(this.grid[i][j - 1]);
         }
+
         this.grid[i][j] = new Node(this.p, i, j, this.w, this.h, walls);
+        this.sets[i][j] = new KrusSet(this.grid[i][j]);
+
         if (i > 0) {
+          this.edges.push(new Edge(this.grid[i][j], this.grid[i - 1][j]));
           this.grid[i - 1][j].addToWalls(this.grid[i][j]);
         }
         if (j > 0) {
+          this.edges.push(new Edge(this.grid[i][j], this.grid[i][j - 1]));
           this.grid[i][j - 1].addToWalls(this.grid[i][j]);
         }
       }
@@ -191,29 +214,35 @@ class Grid {
     }
   }
 
-  generate_all_walls() {
-    while (this.frontier.length > 0) {
-      this.stepPrimsMaze();
+  generate_all_walls(type) {
+    if (parseInt(type) === WALL_GENERATION_ALGO.PRIM) {
+      while (this.frontier.length > 0) {
+        this.stepPrimsMaze();
+      }
+    }
+
+    if (parseInt(type) === WALL_GENERATION_ALGO.KRUS) {
+      while (this.edges.length > 0) {
+        this.stepKrusMaze();
+      }
     }
   }
 
-  generate_all_walls_with_steps(step) {
+  generate_all_walls_with_steps(step, type) {
     this.drawing_step = step;
     this.set_node_value();
 
-    while (this.frontier.length > 0) {
-      this.stepPrimsMaze();
-      console.log(
-        this.frontier.length,
-        this.generation_timestep,
-        this.passage.length
-      );
-      // for (var i = 0; i < this.cols; i++) {
-      //   for (var j = 0; j < this.rows; j++) {
-      //     this.grid[i][j].copy_node();
-      //   }
-      // }
-      this.generation_timestep += 1;
+    if (parseInt(type) === WALL_GENERATION_ALGO.PRIM) {
+      while (this.frontier.length > 0) {
+        this.stepPrimsMaze();
+        this.generation_timestep += 1;
+      }
+    }
+    if (parseInt(type) === WALL_GENERATION_ALGO.KRUS) {
+      while (this.edges.length > 0) {
+        this.stepKrusMaze();
+        this.generation_timestep += 1;
+      }
     }
   }
 
@@ -308,6 +337,25 @@ class Grid {
     if (j < this.grid[0].length - 1) {
       removeFromArray(this.grid[i][j + 1].sons, temp);
     }
+  }
+
+  // Generated using kruskal
+  stepKrusMaze() {
+    let rand = Math.floor(this.edges.length * Math.random());
+    let edge = this.edges[rand];
+
+    this.edges.splice(rand, 1);
+
+    let set1 = this.sets[edge.node1.posx][edge.node1.posy];
+    let set2 = this.sets[edge.node2.posx][edge.node2.posy];
+
+    if (!set1.is_connected(set2)) {
+      set1.connect(set2);
+      edge.node1.removeWall(edge.node2, this.generation_timestep);
+      edge.node2.removeWall(edge.node1, this.generation_timestep);
+    }
+
+    //this.drawDrawing();
   }
 
   updateMazeStep(step) {
