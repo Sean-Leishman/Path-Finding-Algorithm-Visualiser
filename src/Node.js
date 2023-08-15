@@ -61,6 +61,17 @@ class Node {
     return true;
   }
 
+  setFrontier(value, time_step) {
+    this.isFrontier = value;
+
+    if (this.drawing_step > 0) {
+      this.history[Math.floor(time_step / this.drawing_step)] = {
+        walls: this.walls.map((wall) => Object.assign({ ...wall })),
+        frontier: this.isFrontier,
+      };
+    }
+  }
+
   removeWall(node, time_step) {
     for (let i = 0; i < this.walls.length; i++) {
       if (this.walls[i].posx == node.posx && this.walls[i].posy == node.posy) {
@@ -69,8 +80,10 @@ class Node {
         this.updateWall = true;
 
         if (this.drawing_step > 0) {
-          this.history[Math.floor(time_step / this.drawing_step)] =
-            this.walls.map((wall) => Object.assign({ ...wall }));
+          this.history[Math.floor(time_step / this.drawing_step)] = {
+            walls: this.walls.map((wall) => Object.assign({ ...wall })),
+            frontier: this.isFrontier,
+          };
         }
 
         return;
@@ -134,6 +147,10 @@ class Node {
   showPath(col) {
     this.p.noStroke();
     if (col) {
+      this.p.erase();
+      this.p.rect(this.posx * this.w, this.posy * this.b, this.w, this.b);
+      this.p.noErase();
+
       this.p.fill(col);
       this.p.rect(this.posx * this.w, this.posy * this.b, this.w, this.b);
     } else {
@@ -169,8 +186,10 @@ class Node {
     let temp = this.walls;
 
     if (Math.floor(time_step / this.drawing_step) in this.history) {
-      this.walls = this.history[Math.floor(time_step / this.drawing_step)];
+      let hist = this.history[Math.floor(time_step / this.drawing_step)];
 
+      this.walls = hist.walls;
+      this.isFrontier = hist.frontier;
       this.showMaze();
       this.walls = temp;
     }

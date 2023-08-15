@@ -168,7 +168,7 @@ class Grid {
           !this.passage[i].isValid(this.grid[x - 1][y])
         ) {
           this.frontier.push(this.grid[x - 1][y]);
-          this.grid[x - 1][y].isFrontier = true;
+          this.grid[x - 1][y].setFrontier(true, this.generation_timestep);
 
           if (this.grid[x][y].sons.indexOf(this.grid[x - 1][y]) == -1) {
             this.grid[x][y].sons.push(this.grid[x - 1][y]);
@@ -181,7 +181,7 @@ class Grid {
           !this.passage[i].isValid(this.grid[x][y - 1])
         ) {
           this.frontier.push(this.grid[x][y - 1]);
-          this.grid[x][y - 1].isFrontier = true;
+          this.grid[x][y - 1].setFrontier(true, this.generation_timestep);
           if (this.grid[x][y].sons.indexOf(this.grid[x][y - 1]) == -1) {
             this.grid[x][y].sons.push(this.grid[x][y - 1]);
           }
@@ -192,7 +192,7 @@ class Grid {
           !this.grid[x][y + 1].isChecked &&
           !this.passage[i].isValid(this.grid[x][y + 1])
         ) {
-          this.grid[x][y + 1].isFrontier = true;
+          this.grid[x][y + 1].setFrontier(true, this.generation_timestep);
           this.frontier.push(this.grid[x][y + 1]);
           if (this.grid[x][y].sons.indexOf(this.grid[x][y + 1]) == -1) {
             this.grid[x][y].sons.push(this.grid[x][y + 1]);
@@ -205,7 +205,7 @@ class Grid {
           !this.passage[i].isValid(this.grid[x + 1][y])
         ) {
           this.frontier.push(this.grid[x + 1][y]);
-          this.grid[x + 1][y].isFrontier = true;
+          this.grid[x + 1][y].setFrontier(true, this.generation_timestep);
           if (this.grid[x][y].sons.indexOf(this.grid[x + 1][y]) == -1) {
             this.grid[x][y].sons.push(this.grid[x + 1][y]);
           }
@@ -315,7 +315,7 @@ class Grid {
       this.current.sons[Math.floor(this.current.sons.length * Math.random())];
     this.convertWallBetweenFrontierAndPassage(temp);
     temp.isChecked = true;
-    temp.isFrontier = false;
+    temp.setFrontier(false, this.generation_timestep);
 
     this.passage.push(temp);
     this.passage_with_sons.push(temp);
@@ -495,7 +495,7 @@ class Grid {
 
     for (var y = 0; y < this.closedSet.length; y++) {
       // this.p.color(255, 255, 255, 50)
-      this.closedSet[y].showPath();
+      this.closedSet[y].showPath(this.p.color(255, 0, 0, 50));
     }
 
     this.start.showPath(this.p.color(255, 0, 0));
