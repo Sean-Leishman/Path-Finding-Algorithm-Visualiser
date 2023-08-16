@@ -79,8 +79,6 @@ class Grid {
 
     this.p = this.p;
 
-    this.frontier_length = 1;
-
     this.previous_path = [];
 
     this.init();
@@ -138,14 +136,7 @@ class Grid {
 
     this.current = this.start;
 
-    this.current.isChecked = true;
-
-    this.passage = [this.current];
-    this.passage_with_sons = [this.current];
-
-    this.getFrontier();
-
-    this.addNeighbors();
+    this.mark(this.current);
 
     this.openSet.push(this.start);
 
@@ -158,59 +149,17 @@ class Grid {
     this.drawing_step = 0;
   }
 
-  getFrontier() {
-    for (var i = 0; i < this.passage.length; i++) {
-      let x = this.passage[i].posx;
-      let y = this.passage[i].posy;
-      if (x > 0) {
-        if (
-          !this.grid[x - 1][y].isChecked &&
-          !this.passage[i].isValid(this.grid[x - 1][y])
-        ) {
-          this.frontier.push(this.grid[x - 1][y]);
-          this.grid[x - 1][y].setFrontier(true, this.generation_timestep);
-
-          if (this.grid[x][y].sons.indexOf(this.grid[x - 1][y]) == -1) {
-            this.grid[x][y].sons.push(this.grid[x - 1][y]);
-          }
-        }
-      }
-      if (y > 0) {
-        if (
-          !this.grid[x][y - 1].isChecked &&
-          !this.passage[i].isValid(this.grid[x][y - 1])
-        ) {
-          this.frontier.push(this.grid[x][y - 1]);
-          this.grid[x][y - 1].setFrontier(true, this.generation_timestep);
-          if (this.grid[x][y].sons.indexOf(this.grid[x][y - 1]) == -1) {
-            this.grid[x][y].sons.push(this.grid[x][y - 1]);
-          }
-        }
-      }
-      if (y < this.rows - 1) {
-        if (
-          !this.grid[x][y + 1].isChecked &&
-          !this.passage[i].isValid(this.grid[x][y + 1])
-        ) {
-          this.grid[x][y + 1].setFrontier(true, this.generation_timestep);
-          this.frontier.push(this.grid[x][y + 1]);
-          if (this.grid[x][y].sons.indexOf(this.grid[x][y + 1]) == -1) {
-            this.grid[x][y].sons.push(this.grid[x][y + 1]);
-          }
-        }
-      }
-      if (x < this.cols - 1) {
-        if (
-          !this.grid[x + 1][y].isChecked &&
-          !this.passage[i].isValid(this.grid[x + 1][y])
-        ) {
-          this.frontier.push(this.grid[x + 1][y]);
-          this.grid[x + 1][y].setFrontier(true, this.generation_timestep);
-          if (this.grid[x][y].sons.indexOf(this.grid[x + 1][y]) == -1) {
-            this.grid[x][y].sons.push(this.grid[x + 1][y]);
-          }
-        }
-      }
+  addToFrontier(node) {
+    if (
+      node.posx >= 0 &&
+      node.posy >= 0 &&
+      node.posx < this.cols &&
+      node.posy < this.rows &&
+      !node.isChecked &&
+      !node.isFrontier
+    ) {
+      node.setFrontier(true, this.generation_timestep);
+      this.frontier.push(node);
     }
   }
 
@@ -246,97 +195,25 @@ class Grid {
     }
   }
 
-  convertWallBetweenFrontierAndPassage(a) {
-    if (a.posx === this.current.posx) {
-      if (a.posy > this.current.posy) {
-        this.grid[a.posx][a.posy - 1].isChecked = true;
-
-        this.grid[a.posx][a.posy - 1].removeWall(
-          this.grid[a.posx][a.posy],
-          this.generation_timestep
-        );
-        this.grid[a.posx][a.posy].removeWall(
-          this.grid[a.posx][a.posy - 1],
-          this.generation_timestep
-        );
-        this.passage.push(this.grid[a.posx][a.posy - 1]);
-      } else {
-        this.grid[a.posx][a.posy + 1].isChecked = true;
-
-        this.grid[a.posx][a.posy + 1].removeWall(
-          this.grid[a.posx][a.posy],
-          this.generation_timestep
-        );
-        this.grid[a.posx][a.posy].removeWall(
-          this.grid[a.posx][a.posy + 1],
-          this.generation_timestep
-        );
-        this.passage.push(this.grid[a.posx][a.posy + 1]);
-      }
-    } else if (a.posy === this.current.posy) {
-      if (a.posx > this.current.posx) {
-        this.grid[a.posx - 1][a.posy].isChecked = true;
-
-        this.grid[a.posx - 1][a.posy].removeWall(
-          this.grid[a.posx][a.posy],
-          this.generation_timestep
-        );
-        this.grid[a.posx][a.posy].removeWall(
-          this.grid[a.posx - 1][a.posy],
-          this.generation_timestep
-        );
-        this.passage.push(this.grid[a.posx - 1][a.posy]);
-      } else {
-        this.grid[a.posx + 1][a.posy].isChecked = true;
-
-        this.grid[a.posx + 1][a.posy].removeWall(
-          this.grid[a.posx][a.posy],
-          this.generation_timestep
-        );
-        this.grid[a.posx][a.posy].removeWall(
-          this.grid[a.posx + 1][a.posy],
-          this.generation_timestep
-        );
-        this.passage.push(this.grid[a.posx + 1][a.posy]);
-      }
-    }
-  }
-
   // Generated using Prim's Algorithm with Flooding
   stepPrimsMaze() {
-    let rand = Math.floor(this.passage_with_sons.length * Math.random());
-    this.current = this.passage_with_sons[rand];
-    while (this.current.sons.length === 0) {
-      this.passage_with_sons.splice(rand, 1);
-      rand = Math.floor(this.passage_with_sons.length * Math.random());
-      this.current = this.passage_with_sons[rand];
-    }
-    let temp =
-      this.current.sons[Math.floor(this.current.sons.length * Math.random())];
-    this.convertWallBetweenFrontierAndPassage(temp);
-    temp.isChecked = true;
-    temp.setFrontier(false, this.generation_timestep);
+    let rand = Math.floor((this.frontier.length - 1) * Math.random());
 
-    this.passage.push(temp);
-    this.passage_with_sons.push(temp);
-    this.frontier = [];
-    this.getFrontier();
-    removeFromArray(this.current.sons, temp);
+    let node = this.frontier.splice(rand, 1)[0];
+    node.setFrontier(false);
 
-    let i = temp.posx;
-    let j = temp.posy;
-    if (i > 0) {
-      removeFromArray(this.grid[i - 1][j].sons, temp);
+    let walls = this.get_neighbours(node);
+    let wall = walls[Math.floor((walls.length - 1) * Math.random())];
+
+    if (wall == null) {
+      console.log("Null");
     }
-    if (j > 0) {
-      removeFromArray(this.grid[i][j - 1].sons, temp);
-    }
-    if (i < this.grid.length - 1) {
-      removeFromArray(this.grid[i + 1][j].sons, temp);
-    }
-    if (j < this.grid[0].length - 1) {
-      removeFromArray(this.grid[i][j + 1].sons, temp);
-    }
+
+    console.log(node, wall);
+    node.removeWall(wall, this.generation_timestep);
+    wall.removeWall(node, this.generation_timestep);
+
+    this.mark(node);
   }
 
   // Generated using kruskal
@@ -359,19 +236,6 @@ class Grid {
   }
 
   updateMazeStep(step) {
-    //this.stepPrimsMaze();
-
-    // if (
-    //   this.passage.length % this.frontier_length < 2 &&
-    //   this.maze_draw_counter >= 0
-    // ) {
-    //   // this.p.background(255);
-    //   this.frontier_length = this.frontier.length + 1;
-    //   this.maze_draw_counter = 0;
-    //   this.drawDrawing();
-    // }
-
-    // this.maze_draw_counter += 1;
     if (this.drawing_timestep >= this.generation_timestep) {
       return true;
     }
@@ -396,35 +260,46 @@ class Grid {
     }
   }
 
-  addNeighbors() {
-    for (var i = 0; i < this.cols; i++) {
-      for (var j = 0; j < this.rows; j++) {
-        // if (i < this.cols - 1) {
-        //   this.grid[i][j].neighbours.push(this.grid[i + 1][j]);
-        // }
-        // if (i > 0) {
-        //   this.grid[i][j].neighbours.push(this.grid[i - 1][j]);
-        // }
-        // if (j < this.rows - 1) {
-        //   this.grid[i][j].neighbours.push(this.grid[i][j + 1]);
-        // }
-        // if (j > 0) {
-        //   this.grid[i][j].neighbours.push(this.grid[i][j - 1]);
-        // }
-        // if (j > 0 && i > 0) {
-        //   this.grid[i][j].neighbours.push(this.grid[i - 1][j - 1]);
-        // }
-        // if (j < this.rows - 1 && i < this.cols - 1) {
-        //   this.grid[i][j].neighbours.push(this.grid[i + 1][j + 1]);
-        // }
-        // if (j > 0 && i < this.cols - 1) {
-        //   this.grid[i][j].neighbours.push(this.grid[i + 1][j - 1]);
-        // }
-        // if (j < this.rows - 1 && i > 0) {
-        //   this.grid[i][j].neighbours.push(this.grid[i - 1][j + 1]);
-        // }
-      }
+  mark(node) {
+    let i = node.posx;
+    let j = node.posy;
+
+    node.isChecked = true;
+
+    if (i < this.cols - 1) {
+      this.addToFrontier(this.grid[i + 1][j]);
     }
+    if (i > 0) {
+      this.addToFrontier(this.grid[i - 1][j]);
+    }
+    if (j < this.rows - 1) {
+      this.addToFrontier(this.grid[i][j + 1]);
+    }
+    if (j > 0) {
+      this.addToFrontier(this.grid[i][j - 1]);
+    }
+  }
+
+  get_neighbours(node) {
+    let n = [];
+
+    let i = node.posx;
+    let j = node.posy;
+
+    if (i < this.cols - 1 && this.grid[i + 1][j].isChecked) {
+      n.push(this.grid[i + 1][j]);
+    }
+    if (i > 0 && this.grid[i - 1][j].isChecked) {
+      n.push(this.grid[i - 1][j]);
+    }
+    if (j < this.rows - 1 && this.grid[i][j + 1].isChecked) {
+      n.push(this.grid[i][j + 1]);
+    }
+    if (j > 0 && this.grid[i][j - 1].isChecked) {
+      n.push(this.grid[i][j - 1]);
+    }
+
+    return n;
   }
 
   showAStarPath() {

@@ -12,8 +12,8 @@ class Node {
 
     this.isPassage = isPassage;
 
+    // Prim's
     this.isChecked = false;
-
     this.isFrontier = false;
 
     this.start = false;
