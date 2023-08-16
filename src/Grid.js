@@ -135,6 +135,7 @@ class Grid {
     this.end.end = true;
 
     this.current = this.start;
+    this.current.lengthFromRoot = 0;
 
     this.mark(this.current);
 
@@ -205,11 +206,6 @@ class Grid {
     let walls = this.get_neighbours(node);
     let wall = walls[Math.floor((walls.length - 1) * Math.random())];
 
-    if (wall == null) {
-      console.log("Null");
-    }
-
-    console.log(node, wall);
     node.removeWall(wall, this.generation_timestep);
     wall.removeWall(node, this.generation_timestep);
 
@@ -335,6 +331,8 @@ class Grid {
                 newPath = true;
                 this.openSet.push(neighbour);
               }
+              neighbour.lengthFromRoot = neighbour.g;
+
               if (newPath) {
                 neighbour.h = heuristic(neighbour, this.end, this.p);
                 neighbour.f = neighbour.g + neighbour.h;
@@ -365,12 +363,15 @@ class Grid {
     // }
 
     for (var x = 0; x < this.openSet.length; x++) {
-      this.openSet[x].showPath(this.p.color(0, 0, 255, 50));
+      let val = (165 + this.openSet[x].lengthFromRoot * 2) % 360;
+      let hsl = this.p.color("hsla(" + val + ",90%,50%, 1)");
+      this.openSet[x].showPath(hsl);
     }
 
     for (var y = 0; y < this.closedSet.length; y++) {
-      // this.p.color(255, 255, 255, 50)
-      this.closedSet[y].showPath(this.p.color(255, 0, 0, 50));
+      let val = (165 + this.closedSet[y].lengthFromRoot * 2) % 360;
+      let hsl = this.p.color("hsla(" + val + ",90%,50%, 1)");
+      this.closedSet[y].showPath(hsl);
     }
 
     this.start.showPath(this.p.color(255, 0, 0));

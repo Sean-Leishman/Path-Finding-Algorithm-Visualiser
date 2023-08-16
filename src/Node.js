@@ -30,6 +30,8 @@ class Node {
     // Nodes that have wall with curr node
     this.walls = walls;
 
+    this.lengthFromRoot = Infinity;
+
     this.p = p;
 
     this.history = {};
@@ -76,13 +78,18 @@ class Node {
     for (let i = 0; i < this.walls.length; i++) {
       if (this.walls[i].posx == node.posx && this.walls[i].posy == node.posy) {
         this.neighbours.push(this.walls[i]);
-        this.walls.splice(i, 1);
+        let wall = this.walls.splice(i, 1)[0];
         this.updateWall = true;
+
+        if (wall.lengthFromRoot + 1 < this.lengthFromRoot) {
+          this.lengthFromRoot = wall.lengthFromRoot + 1;
+        }
 
         if (this.drawing_step > 0) {
           this.history[Math.floor(time_step / this.drawing_step)] = {
             walls: this.walls.map((wall) => Object.assign({ ...wall })),
             frontier: this.isFrontier,
+            lengthFromRoot: this.lengthFromRoot,
           };
         }
 
@@ -111,7 +118,9 @@ class Node {
     } else if (this.end) {
       this.p.fill(0, 255, 0, 50);
     } else {
-      this.p.fill(255, 255, 255);
+      // this.p.fill(255, 255, 255);
+      let val = (180 + this.lengthFromRoot * 2) % 360;
+      this.p.fill("hsl(" + val + ",90%,45%)");
     }
 
     this.p.noStroke(1);
@@ -190,6 +199,7 @@ class Node {
 
       this.walls = hist.walls;
       this.isFrontier = hist.frontier;
+      this.lengthFromRoot = hist.lengthFromRoot;
       this.showMaze();
       this.walls = temp;
     }
